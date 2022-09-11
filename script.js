@@ -1,11 +1,13 @@
 window.addEventListener('DOMContentLoaded', () => {
     let interval;
+    let audio = new Audio('timer.mp3');;
     function getZero (num) {
-        if(num <= 10) {
+        if(num < 10) {
             return '0' + num
         }
         return num
     }
+    let stopAudio;
     function timer(minutes, seconds = 0) {
         let t = 60 * minutes + seconds
         function getRemaining(time){
@@ -16,16 +18,18 @@ window.addEventListener('DOMContentLoaded', () => {
         getRemaining(t)
         interval = setInterval(() => {
             if(t <= 0) {
-                const audio = new Audio('timer.mp3');
-                audio.loop = true;
+                // audio = new Audio('timer.mp3');
                 audio.play();
-                const stopAudio = document.createElement('button')
+                audio.loop = true
+                stopAudio = document.createElement('button')
                 stopAudio.classList.add('btn', 'stop')
                 stopAudio.innerHTML = 'Остановить таймер'
                 document.querySelector('.form').append(stopAudio);
                 stopAudio.addEventListener('click', (e) => {
                     e.preventDefault();
                     audio.pause();
+                    stopAudio.remove();
+                    stopAudio = undefined
                 })
                 clearInterval(interval);
             }
@@ -37,9 +41,12 @@ window.addEventListener('DOMContentLoaded', () => {
     let sec = document.querySelector('[name="seconds"]')
     document.querySelector('.form').addEventListener('submit', (e) => {
         e.preventDefault();
-        clearInterval(interval);
-        timer(+min.value, +sec.value)
-        min.value = ''
-        sec.value = ''
+        if(!stopAudio) {
+            clearInterval(interval);
+            
+            timer(+min.value, +sec.value)
+            min.value = ''
+            sec.value = ''
+        }
     })
 })
